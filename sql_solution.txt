@@ -1,0 +1,168 @@
+-- 1.Creating Tables
+
+-- Creating the 'customers' table to store customer information.
+
+CREATE TABLE customers (
+    customer_id SERIAL PRIMARY KEY,
+    customer_name VARCHAR(255) NOT NULL,
+    email_address VARCHAR(255) UNIQUE,
+    country VARCHAR(100) NOT NULL,
+    birth_date TIMESTAMP NOT NULL
+) 
+DISTRIBUTED BY (customer_id);
+
+-- Creating the 'products' table to store product details.
+CREATE TABLE products (
+    product_id SERIAL PRIMARY KEY,
+    product_name VARCHAR(255) NOT NULL,
+    price NUMERIC(10, 2) NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+DISTRIBUTED BY (product_id);
+
+
+
+-- Creating the 'sales_transactions' table to store transaction data.
+CREATE TABLE sales_transactions (
+    transaction_id SERIAL PRIMARY KEY,
+    customer_id INT NOT NULL,
+    product_id INT NOT NULL,
+    purchase_date DATE NOT NULL,
+    quantity_purchased INT NOT NULL CHECK (quantity_purchased > 0),
+    total_amount NUMERIC(10, 2), 
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+) 
+DISTRIBUTED BY (transaction_id);
+
+
+-- Creating the 'shipping_details' table to store information about shipping related to transactions.
+CREATE TABLE shipping_details (
+    transaction_id INT PRIMARY KEY,
+    shipping_date DATE NOT NULL,
+    shipping_address VARCHAR(255) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    country VARCHAR(100) NOT NULL,
+    shipping_type VARCHAR(255) NOT NULL,
+    FOREIGN KEY (transaction_id) REFERENCES sales_transactions(transaction_id)
+) 
+DISTRIBUTED BY (transaction_id);
+
+
+
+-- 2.Inserting Data
+
+
+INSERT INTO customers (customer_name, email_address, country, birth_date)
+VALUES 
+('John Doe', 'johndoe@example.com', 'USA', '1985-01-15'),
+('Jane Smith', 'janesmith@example.com', 'Canada', '1990-02-20'),
+('Michael Brown', 'michaelbrown@example.com', 'UK', '1978-03-25'),
+('Emily Davis', 'emilydavis@example.com', 'Australia', '1983-04-10'),
+('Chris Johnson', 'chrisjohnson@example.com', 'Germany', '1992-05-30'),
+('Jessica Wilson', 'jessicawilson@example.com', 'France', '1988-06-18'),
+('Daniel Lee', 'daniellee@example.com', 'Japan', '1984-07-22'),
+('Laura White', 'laurawhite@example.com', 'Italy', '1991-08-12'),
+('David Harris', 'davidharris@example.com', 'Spain', '1979-09-05'),
+('Sophia Martin', 'sophiamartin@example.com', 'Netherlands', '1987-10-09'),
+('James Thompson', 'jamesthompson@example.com', 'Brazil', '1993-11-15'),
+('Olivia Clark', 'oliviaclark@example.com', 'South Africa', '1986-12-24'),
+('Lucas Lewis', 'lucaslewis@example.com', 'India', '1994-01-30'),
+('Isabella Walker', 'isabellawalker@example.com', 'New Zealand', '1982-02-18'),
+('William King', 'williamking@example.com', 'Russia', '1981-03-27');
+
+
+INSERT INTO products (product_name, price, category, created_at)
+VALUES 
+('Laptop', 999.99, 'Electronics', '2024-01-01'),
+('Smartphone', 599.99, 'Electronics', '2024-01-05'),
+('Headphones', 199.99, 'Accessories', '2024-01-10'),
+('Desk Chair', 149.99, 'Furniture', '2024-01-15'),
+('Monitor', 299.99, 'Electronics', '2024-01-20'),
+('Keyboard', 49.99, 'Accessories', '2024-01-25'),
+('Mouse', 29.99, 'Accessories', '2024-01-30'),
+('Printer', 199.99, 'Electronics', '2024-02-01'),
+('Tablet', 399.99, 'Electronics', '2024-02-05'),
+('Desk Lamp', 39.99, 'Furniture', '2024-02-10'),
+('Bookshelf', 129.99, 'Furniture', '2024-02-15'),
+('Gaming Console', 499.99, 'Electronics', '2024-02-20'),
+('Router', 89.99, 'Electronics', '2024-02-25'),
+('External Hard Drive', 119.99, 'Accessories', '2024-03-01'),
+('Office Desk', 249.99, 'Furniture', '2024-03-05');
+
+
+
+INSERT INTO sales_transactions (customer_id, product_id, purchase_date, quantity_purchased, total_amount)
+VALUES 
+(1, 1, '2024-01-05', 1, 999.99),
+(2, 2, '2024-01-10', 2, 1199.98),
+(3, 3, '2024-01-15', 1, 199.99),
+(4, 4, '2024-01-20', 1, 149.99),
+(5, 5, '2024-01-25', 1, 299.99),
+(6, 6, '2024-02-01', 3, 149.97),
+(7, 7, '2024-02-05', 2, 59.98),
+(8, 8, '2024-02-10', 1, 199.99),
+(9, 9, '2024-02-15', 2, 799.98),
+(10, 10, '2024-02-20', 1, 39.99),
+(11, 11, '2024-02-25', 2, 259.98),
+(12, 12, '2024-03-01', 1, 499.99),
+(13, 13, '2024-03-05', 1, 89.99),
+(14, 14, '2024-03-10', 1, 119.99),
+(15, 15, '2024-03-15', 1, 249.99);
+
+
+
+INSERT INTO shipping_details (transaction_id, shipping_date, shipping_address, city, country, shipping_type)
+VALUES 
+(1, '2024-01-06', '123 Main St', 'New York', 'USA', 'Standard'),
+(2, '2024-01-11', '456 Maple Ave', 'Toronto', 'Canada', 'Express'),
+(3, '2024-01-16', '789 Oak St', 'London', 'UK', 'Standard'),
+(4, '2024-01-21', '101 Pine St', 'Sydney', 'Australia', 'Standard'),
+(5, '2024-01-26', '202 Birch St', 'Berlin', 'Germany', 'Express'),
+(6, '2024-02-02', '303 Cedar Ave', 'Paris', 'France', 'Standard'),
+(7, '2024-02-06', '404 Elm St', 'Tokyo', 'Japan', 'Express'),
+(8, '2024-02-11', '505 Willow St', 'Rome', 'Italy', 'Standard'),
+(9, '2024-02-16', '606 Walnut St', 'Madrid', 'Spain', 'Express'),
+(10, '2024-02-21', '707 Chestnut St', 'Amsterdam', 'Netherlands', 'Standard'),
+(11, '2024-02-26', '808 Poplar Ave', 'Sao Paulo', 'Brazil', 'Express'),
+(12, '2024-03-02', '909 Redwood St', 'Cape Town', 'South Africa', 'Standard'),
+(13, '2024-03-06', '1010 Palm Ave', 'Mumbai', 'India', 'Express'),
+(14, '2024-03-11', '1111 Cedar St', 'Auckland', 'New Zealand', 'Standard'),
+(15, '2024-03-16', '1212 Maple St', 'Moscow', 'Russia', 'Express');
+
+
+
+-- 3.Required SQL Query
+
+WITH MonthlySales AS (
+    SELECT
+        DATE_TRUNC('month', purchase_date)::date AS month,
+        SUM(total_amount) AS total_sales_amount,
+        COUNT(transaction_id) AS total_transactions
+    FROM
+        sales_transactions
+    GROUP BY
+        DATE_TRUNC('month', purchase_date)
+),
+MovingAverage AS (
+    SELECT
+        month,
+        total_sales_amount,
+        total_transactions,
+        AVG(total_sales_amount) OVER (
+            ORDER BY month
+            ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+        ) AS moving_avg_sales_amount
+    FROM
+        MonthlySales
+)
+SELECT
+    month,
+    total_sales_amount,
+    total_transactions,
+    moving_avg_sales_amount
+FROM
+    MovingAverage
+ORDER BY
+    month;
